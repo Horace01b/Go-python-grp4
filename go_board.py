@@ -1,3 +1,8 @@
+from rich.console import Console
+
+
+console = Console()
+
 board_size = 9
 
 # Initialize a Go board of size 9x9
@@ -32,22 +37,24 @@ def place_stone(row, col, stone):
 
 current_player = "B"
 while True:
+    console.print("[bold green]Welcome to Go![/]")
     print_board()
     print()
-    print(f"Current player: {current_player}")
-    print("Enter your move (row and column eg: 2 3) or 'q' to quit:")
+    console.print(f"Current player: [bold {'white on black' if current_player=='B' else 'black on white'}]{current_player}[/]")
+
+    console.print("[bold green]Enter your move (row and column eg: 2 3) or 'q' to quit:[/]", end=" ")
     player_move = input().strip()
 
     if player_move.lower() == "q":
-        print("Game over. Thanks for playing!")
+        console.print("[bold red]Game over. Thanks for playing![/]")
         break
 
     move = player_move.split()
     if len(move) != 2:
-        print("Invalid input. Please enter row and column numbers.")
+        console.print("[bold red]Invalid input. Please enter row and column numbers.[/]")
         continue
     if not move[0].isdigit() or not move[1].isdigit():
-        print("Invalid input. Please enter valid row and column numbers.")
+        console.print("[bold red]Invalid input. Please enter valid row and column numbers.[/]")
         continue
     row = int(move[0])
     col = int(move[1])
@@ -55,4 +62,4 @@ while True:
     if place_stone(row, col, current_player):
         current_player = "W" if current_player == "B" else "B"
     else:
-        print("Invalid move. That spot is already taken or out of bounds.")
+        console.print("[bold red]Invalid move. That spot is already taken or out of bounds.[/]")
