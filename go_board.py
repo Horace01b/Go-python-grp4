@@ -50,5 +50,13 @@ while True:
         continue
     row = int(move[0])
     col = int(move[1])
+    
+    if place_stone(row, col, current_player):
+        if current_player == "B":
+            current_player =  "W"
+        else:
+            current_player = "B"
+    else:
+        console.print("[bold red]Invalid move. That spot is already taken or out of bounds.[/]")
 
 
