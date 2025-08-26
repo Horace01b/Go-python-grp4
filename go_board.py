@@ -72,6 +72,21 @@ def check_captures(row, col, stone):
             if not has_liberty(group):
                 remove_group(group)
 
+
+def calculate_score(board):
+    """Count stones for each player."""
+    black_score = 0
+    white_score = 0
+
+    for row in board:
+        for cell in row:
+            if cell == "B":
+                black_score += 1
+            elif cell == "W":
+                white_score += 1
+
+    return black_score, white_score
+  
 def pass_game(current_player):
     console.print(f"[bold yellow]{current_player} has passed. Game was passed to the other player.[/]")
     return "W" if current_player == "B" else "B"
@@ -85,11 +100,15 @@ def end_game():
 current_player = "B"
 consecutive_passes = 0
 
+
+current_player = "B"    
 while True:
     console.print("[bold green]Welcome to Go![/]")
     print_board()
     print()
     console.print(f"Current player: [bold {'white on black' if current_player=='B' else 'black on white'}]{current_player}[/]")
+    black_score, white_score = calculate_score(board)
+    console.print(f"[bold blue]Score - Black: {black_score}, White: {white_score}[/]")
 
     console.print("[bold green]Enter your move (row col), 'pass' to pass, or 'q' to quit:[/]", end=" ")
     player_move = input().strip().lower()
@@ -114,6 +133,11 @@ while True:
         console.print("[bold red]Invalid input. Please enter row and column numbers.[/]")
         continue
 
+    if not move[0].isdigit() or not move[1].isdigit():
+        console.print("[bold red]Invalid input. Please enter valid row and column numbers.[/]")
+        continue
+
+
     row = int(move[0])
     col = int(move[1])
 
@@ -122,3 +146,13 @@ while True:
         current_player = "W" if current_player == "B" else "B"
     else:
         console.print("[bold red]Invalid move. That spot is already taken or out of bounds.[/]")
+
+
+    
+
+
+
+
+
+
+
