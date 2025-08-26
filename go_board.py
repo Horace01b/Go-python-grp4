@@ -1,6 +1,5 @@
 from rich.console import Console
 
-
 console = Console()
 
 board_size = 9
@@ -8,23 +7,25 @@ board_size = 9
 # Initialize a Go board of size 9x9  
 board = []  
 
-for _ in range(board_size):            
+for _ in range(board_size):
     row = []                           
-    for _ in range(board_size):        
-        row.append(".")                
-    board.append(row)                  
+    for _ in range(board_size):
+        row.append(".")
+    board.append(row)      
 
+# Print the board
 def print_board():
     print("  " + " ".join(f"{column:2}" for column in range(board_size)))
-    # Print each row with row numbers   
     for row_index, row in enumerate(board):
         print(f"{row_index:2} " + " ".join(f"{cell:2}" for cell in row))
-        
+
+
 def place_stone(row, col, stone):
     if 0 <= row < board_size and 0 <= col < board_size and board[row][col] == ".":
         board[row][col] = stone
         return True
     return False
+
 
 def get_neighbors(row, col):
     neighbors = []
@@ -38,11 +39,9 @@ def get_neighbors(row, col):
         neighbors.append((row, col + 1))
     return neighbors
 
-
 def find_group(row, col, stone):
-    group = [(row, col)]  
-    checked = []          
-
+    group = [(row, col)]
+    checked = []
     for x, y in group:
         if (x, y) not in checked:
             checked.append((x, y))
@@ -55,7 +54,7 @@ def find_group(row, col, stone):
 def has_liberty(group):
     for x, y in group:
         for nx, ny in get_neighbors(x, y):
-            if board[nx][ny] == ".":  
+            if board[nx][ny] == ".":
                 return True
     return False
 
@@ -70,8 +69,9 @@ def check_captures(row, col, stone):
     for nx, ny in get_neighbors(row, col):
         if board[nx][ny] == opponent:
             group = find_group(nx, ny, opponent)
-            if has_liberty(group) == False:
+            if not has_liberty(group):
                 remove_group(group)
+
 
 def calculate_score(board):
     """Count stones for each player."""
@@ -85,7 +85,21 @@ def calculate_score(board):
             elif cell == "W":
                 white_score += 1
 
-    return black_score, white_score 
+    return black_score, white_score
+  
+def pass_game(current_player):
+    console.print(f"[bold yellow]{current_player} has passed. Game was passed to the other player.[/]")
+    return "W" if current_player == "B" else "B"
+
+def end_game():
+    console.print("[bold magenta]Both players have passed. The game is over.[/]")
+    print_board()
+    console.print("[bold magenta]Final scoring is not implemented in this version.[/]")
+    console.print("[bold red]Thanks for playing![/]")
+
+current_player = "B"
+consecutive_passes = 0
+
 
 current_player = "B"    
 while True:
@@ -96,31 +110,46 @@ while True:
     black_score, white_score = calculate_score(board)
     console.print(f"[bold blue]Score - Black: {black_score}, White: {white_score}[/]")
 
-    console.print("[bold green]Enter your move (row and column eg: 2 3) or 'q' to quit:[/]", end=" ")
-    player_move = input().strip()
+    console.print("[bold green]Enter your move (row col), 'pass' to pass, or 'q' to quit:[/]", end=" ")
+    player_move = input().strip().lower()
 
-    if player_move.lower() == "q":
+    if player_move == "q":
         console.print("[bold red]Game over. Thanks for playing![/]")
         break
 
+    if player_move == "pass":
+        consecutive_passes += 1
+        if consecutive_passes == 2:
+            end_game()
+            break
+        current_player = pass_game(current_player)
+        continue
+
+    # Reset pass counter if a move is made
+    consecutive_passes = 0
+
     move = player_move.split()
-    if len(move) != 2:
+    if len(move) != 2 or not move[0].isdigit() or not move[1].isdigit():
         console.print("[bold red]Invalid input. Please enter row and column numbers.[/]")
         continue
+
     if not move[0].isdigit() or not move[1].isdigit():
         console.print("[bold red]Invalid input. Please enter valid row and column numbers.[/]")
         continue
+
 
     row = int(move[0])
     col = int(move[1])
 
     if place_stone(row, col, current_player):
-        check_captures(row, col, current_player)  
+        check_captures(row, col, current_player)
         current_player = "W" if current_player == "B" else "B"
     else:
         console.print("[bold red]Invalid move. That spot is already taken or out of bounds.[/]")
 
+
     
+
 
 
 
