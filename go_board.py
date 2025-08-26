@@ -1,9 +1,7 @@
 from rich.console import Console
-
 console = Console()
 
 board_size = 9
-
 # Initialize a Go board of size 9x9  
 board = []  
 
@@ -54,11 +52,6 @@ def check_captures(row, col, stone):
             if has_liberty(nx, ny) == False:   
                 board[nx][ny] = "." 
 
-            group = find_group(nx, ny, opponent)
-            if not has_liberty(group):
-                remove_group(group)
-
-
 def calculate_score(board):
     """Count stones for each player."""
     black_score = 0
@@ -80,14 +73,21 @@ def pass_game(current_player):
 def end_game():
     console.print("[bold magenta]Both players have passed. The game is over.[/]")
     print_board()
-    console.print("[bold magenta]Final scoring is not implemented in this version.[/]")
+    print()
+    black_score, white_score = calculate_score(board)
+    console.print(f"[bold blue]Final Score - Black: {black_score}, White: {white_score}[/]")
+    if black_score > white_score:
+        console.print("[bold green]Black wins![/]")
+    elif white_score > black_score:
+        console.print("[bold green]White wins![/]")
+    else:
+        console.print("[bold green]It's a tie![/]")
+    # console.print("[bold magenta]Final scoring is not implemented in this version.[/]")
     console.print("[bold red]Thanks for playing![/]")
 
 current_player = "B"
 consecutive_passes = 0
-
-
-current_player = "B"    
+ 
 while True:
     console.print("[bold green]Welcome to Go![/]")
     print_board()
@@ -118,12 +118,6 @@ while True:
     if len(move) != 2 or not move[0].isdigit() or not move[1].isdigit():
         console.print("[bold red]Invalid input. Please enter row and column numbers.[/]")
         continue
-
-    if not move[0].isdigit() or not move[1].isdigit():
-        console.print("[bold red]Invalid input. Please enter valid row and column numbers.[/]")
-        continue
-
-
     row = int(move[0])
     col = int(move[1])
 
