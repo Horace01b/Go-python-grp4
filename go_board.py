@@ -70,7 +70,7 @@ def check_captures(row, col, stone):
     for nx, ny in get_neighbors(row, col):
         if board[nx][ny] == opponent:
             group = find_group(nx, ny, opponent)
-            if not has_liberty(group):
+            if has_liberty(group) == False:
                 remove_group(group)
 
 
