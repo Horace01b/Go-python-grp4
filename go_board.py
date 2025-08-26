@@ -38,42 +38,18 @@ def get_neighbors(row, col):
         neighbors.append((row, col + 1))
     return neighbors
 
-
-def find_group(row, col, stone):
-    group = [(row, col)]  
-    checked = []          
-
-    for x, y in group:
-        if (x, y) not in checked:
-            checked.append((x, y))
-            for nx, ny in get_neighbors(x, y):
-                if board[nx][ny] == stone and (nx, ny) not in group:
-                    group.append((nx, ny))
-    return group
-
-
-def has_liberty(group):
-    for x, y in group:
-        for nx, ny in get_neighbors(x, y):
-            if board[nx][ny] == ".":  
-                return True
+def has_liberty(row, col):
+    for nx, ny in get_neighbors(row, col):
+        if board[nx][ny] == ".":  
+            return True
     return False
-
-
-def remove_group(group):
-    for x, y in group:
-        board[x][y] = "."
-
 
 def check_captures(row, col, stone):
     opponent = "B" if stone == "W" else "W"
     for nx, ny in get_neighbors(row, col):
         if board[nx][ny] == opponent:
-            group = find_group(nx, ny, opponent)
-            if has_liberty(group) == False:
-                remove_group(group)
-
-
+            if has_liberty(nx, ny) == False:   
+                board[nx][ny] = "." 
 
 current_player = "B"
 
