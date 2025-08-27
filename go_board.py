@@ -38,11 +38,10 @@ def get_neighbors(row, col):
     return neighbors
 
 
-def has_liberty(group):
-    for x, y in group:
-        for nx, ny in get_neighbors(x, y):
-            if board[nx][ny] == ".":
-                return Tru
+def has_liberty(row, col):
+    for nx, ny in get_neighbors(row, col):
+        if board[nx][ny] == ".":
+            return True
     return False
 
 def check_captures(row, col, stone):
@@ -53,7 +52,6 @@ def check_captures(row, col, stone):
                 board[nx][ny] = "." 
 
 def calculate_score(board):
-    """Count stones for each player."""
     black_score = 0
     white_score = 0
 
@@ -110,7 +108,6 @@ while True:
             break
         current_player = pass_game(current_player)
         continue
-
     # Reset pass counter if a move is made
     consecutive_passes = 0
 
