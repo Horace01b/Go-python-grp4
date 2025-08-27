@@ -1,3 +1,7 @@
+from app.db import SessionLocal
+from app.models.player import Player
+from app.models.game import Game
+
 from rich.console import Console
 console = Console()
 
@@ -17,6 +21,32 @@ def print_board():
     for row_index, row in enumerate(board):
         print(f"{row_index:2} " + " ".join(f"{cell:2}" for cell in row))
 
+def create_or_get_player(name: str):
+    session = SessionLocal()
+    player = session.query(Player).filter_by(name=name).first()
+    if not player:
+        player = Player(name=name)
+        session.add(player)
+        session.commit()
+        session.refresh(player)
+        print(f" New player created: {player.name} ")
+    else:
+        print(f" Welcome back, {player.name}! ")
+    return player
+
+def create_game(black_player_id: int, white_player_id: int, board_size=9):
+    session = SessionLocal()
+    empty_board = [["." for _ in range(board_size)] for _ in range(board_size)]
+    game = Game(
+        black_player_id=black_player_id,
+        white_player_id=white_player_id,
+        board=empty_board
+    )
+    session.add(game)
+    session.commit()
+    session.refresh(game)
+    print(f":video_game: New game started: Black={black_player_id}, White={white_player_id}")
+    return game
 
 def place_stone(row, col, stone):
     if 0 <= row < board_size and 0 <= col < board_size and board[row][col] == ".":
@@ -86,8 +116,18 @@ def end_game():
 current_player = "B"
 consecutive_passes = 0
  
+
+black_name = input("Enter name for Black player: ")
+black_player = create_or_get_player(black_name, black_nick)
+
+white_name = input("Enter name for White player: ")
+white_player = create_or_get_player(white_name, white_nick)
+
+
+
 while True:
     console.print("[bold green]Welcome to Go![/]")
+
     print_board()
     print()
     console.print(f"Current player: [bold {'white on black' if current_player=='B' else 'black on white'}]{current_player}[/]")
@@ -108,7 +148,7 @@ while True:
             break
         current_player = pass_game(current_player)
         continue
-    # Reset pass counter if a move is made
+
     consecutive_passes = 0
 
     move = player_move.split()
