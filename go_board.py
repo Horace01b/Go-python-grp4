@@ -5,8 +5,7 @@ from app.models.game import Game
 from rich.console import Console
 console = Console()
 
-board_size = 9
-# Initialize a Go board of size 9x9  
+board_size = 9 
 board = []  
 
 for _ in range(board_size):
@@ -21,7 +20,7 @@ def print_board():
     for row_index, row in enumerate(board):
         print(f"{row_index:2} " + " ".join(f"{cell:2}" for cell in row))
 
-def create_or_get_player(name: str):
+def create_player(name):
     session = SessionLocal()
     player = session.query(Player).filter_by(name=name).first()
     if not player:
@@ -32,9 +31,10 @@ def create_or_get_player(name: str):
         print(f" New player created: {player.name} ")
     else:
         print(f" Welcome back, {player.name}! ")
+    session.close()
     return player
 
-def create_game(black_player_id: int, white_player_id: int, board_size=9):
+def create_game(black_player_id, white_player_id, board_size=9):
     session = SessionLocal()
     empty_board = [["." for _ in range(board_size)] for _ in range(board_size)]
     game = Game(
@@ -45,7 +45,8 @@ def create_game(black_player_id: int, white_player_id: int, board_size=9):
     session.add(game)
     session.commit()
     session.refresh(game)
-    print(f"New game started: Black={black_player_id}, White={white_player_id}")
+    print(f"New game started: Black {black_player_id} vs White {white_player_id}")
+    session.close()
     return game
 
 def place_stone(row, col, stone):
@@ -112,16 +113,18 @@ def end_game():
         console.print("[bold green]It's a tie![/]")
     # console.print("[bold magenta]Final scoring is not implemented in this version.[/]")
     console.print("[bold red]Thanks for playing![/]")
+    
 
 def play_game():
     current_player = "B"
     consecutive_passes = 0
 
     black_name = input("Enter name for Black player: ")
-    black_player = create_or_get_player(black_name)
-
     white_name = input("Enter name for White player: ")
-    white_player = create_or_get_player(white_name)
+
+    black_player = create_player(black_name)
+    white_player = create_player(white_name)
+    game = create_game(black_player.id, white_player.id, board_size)
 
     console.print("[bold green]Welcome to Go![/]")
 
