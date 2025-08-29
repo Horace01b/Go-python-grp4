@@ -54,8 +54,6 @@ def place_stone(row, col, stone):
         board[row][col] = stone
         return True
     return False
-
-
 def get_neighbors(row, col):
     neighbors = []
     if row > 0: 
@@ -111,9 +109,8 @@ def end_game():
         console.print("[bold green]White wins![/]")
     else:
         console.print("[bold green]It's a tie![/]")
-    # console.print("[bold magenta]Final scoring is not implemented in this version.[/]")
-    console.print("[bold red]Thanks for playing![/]")
     
+    console.print("[bold red]Thanks for playing![/]")
 
 def play_game():
     current_player = "B"
